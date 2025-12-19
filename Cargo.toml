@@ -2,10 +2,32 @@
 name = "android-mem-kit"
 version = "0.1.0"
 edition = "2024"
-description = "A comprehensive memory instrumentation library for Android rooted environments."
-license = "MIT"
-repository = "https://github.com/HanSo/android-mem-kit"
-keywords = ["android", "memory", "hooking", "il2cpp", "instrumentation"]
+description = "A comprehensive memory instrumentation library for Android rooted environments (Il2Cpp, Hooking, Patching)."
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/HanSoBored/android-mem-kit"
+documentation = "https://docs.rs/android-mem-kit"
+readme = "README.md"
+keywords = ["android", "memory", "hooking", "il2cpp", "unsafe"]
+categories = ["embedded", "os::android-apis"]
+
+include = [
+    "src/**/*",
+    "Cargo.toml",
+    "build.rs",
+    "README.md",
+    "LICENSE",
+    # Sertakan source code dependency
+    "deps/Dobby/**/*",
+    "deps/KittyMemory/**/*",
+    "deps/xdl/**/*"
+]
+exclude = [
+    "deps/**/.git",
+    "deps/**/example",
+    "deps/**/tests",
+    "deps/Dobby/docs",
+    "target"
+]
 
 [dependencies]
 libc = "0.2"
@@ -17,4 +39,7 @@ thiserror = "1.0"
 [build-dependencies]
 cc = "1.0"
 cmake = "0.1"
-bindgen = "0.69" 
+bindgen = "0.69"
+
+[package.metadata.docs.rs]
+targets = ["aarch64-linux-android"]
