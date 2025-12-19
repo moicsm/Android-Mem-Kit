@@ -10,23 +10,41 @@ readme = "README.md"
 keywords = ["android", "memory", "hooking", "il2cpp", "unsafe"]
 categories = ["embedded", "os::android-apis"]
 
-include = [
-    "src/**/*",
-    "Cargo.toml",
-    "build.rs",
-    "README.md",
-    "LICENSE",
-    # Sertakan source code dependency
-    "deps/Dobby/**/*",
-    "deps/KittyMemory/**/*",
-    "deps/xdl/**/*"
-]
 exclude = [
-    "deps/**/.git",
-    "deps/**/example",
-    "deps/**/tests",
+    ".git",
+    ".gitignore",
+    ".gitmodules",
+    "**/.git",
+    "**/.github",
+    "**/.DS_Store",
+
+    "target",
+    "**/*.so",
+    "**/*.a",
+    "**/*.o",
+    "**/*.apk",
+    "**/*.aar",
+    "**/*.jar",
+    "**/*.zip",
+    "**/*.gz",
+    "**/*.tar",
+
     "deps/Dobby/docs",
-    "target"
+    "deps/Dobby/examples",
+    "deps/Dobby/tests",
+    "deps/Dobby/scripts",
+    "deps/Dobby/builtin-plugin",
+    "deps/Dobby/readme*",
+
+    "deps/KittyMemory/example-android",
+    "deps/KittyMemory/example-ios",
+    "deps/KittyMemory/README*",
+
+    "deps/xdl/sample",
+    "deps/xdl/test",
+    "deps/xdl/project",
+    "deps/xdl/gradle*",
+    "deps/xdl/build.gradle"
 ]
 
 [dependencies]
